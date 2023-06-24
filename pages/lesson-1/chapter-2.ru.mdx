@@ -1,109 +1,163 @@
-# Chapter 2
-
-## Deploy to Vercel
-
-You should already know how to do it.
-
-If you're using the Redux-vite template make sure to change the output directory to 'build' in project settings on
-Vercel:
-![vercel-output-directory.png](./images/vercel-output-directory.png)
-
-Make sure it is deployed successfully.
+import { Callout } from 'nextra/components'
 
 ## Storybook
 
-- Install:
+- Установим storybook:
 
-```bash
+```bash filename="Terminal"
 pnpm dlx storybook@latest init
 ```
 
-> **Accept eslint config**
+<Callout type="info">Соглашаемся на установку eslint конфига</Callout>
 
-- Try it out:
+- Запускаем storybook:
 
-```bash
+```bash filename="Terminal"
 pnpm run storybook
 ```
 
-## Install fonts
+## Установка шрифтов
 
+Что бы понять какие шрифты нам нужны, нужно посмотреть на дизайн, вкладка Typography:
+
+![typography-font.png](./images/typography-font.png)
+
+Нам нужен шрифт Roboto, доступный на Fontsource:
 [Fontsource/montserrat](https://fontsource.org/fonts/montserrat)
 
-```bash
-pnpm install @fontsource-variable/montserrat
+- Установим шрифт:
+
+```bash filename="Terminal"
+pnpm install @fontsource/roboto
 ```
 
-```tsx
-// main.tsx
+- Импортируем шрифт в _main.tsx_ и в _preview.tsx_:
 
-import '@fontsource-variable/montserrat'
+```tsx filename="main.tsx"
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/700.css'
 ```
 
-## Set up css variables
+```tsx filename=".storybook/preview.ts"
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/700.css'
+```
 
-- Create an _src/styles_ directory in your project  
-  containing the following files:
+<Callout type="info">
+  В данном случае нам нужны только вариации 400 и 700, поэтому их и ставим. Помните, что если Вам
+  понадобиться использовать другую толщину шрифта, его нужно будет также импортировать
+</Callout>
 
+## CSS переменные
+
+- Создадим директорию _src/styles_ в проекте
+  и добавим в нее следующие файлы:
+
+{/* prettier-ignore */}
 ```markdown
-src  
- └── styles  
- └── \_boilerplate.scss  
- └── \_colors.scss  
- └── \_typography.scss  
- └── index.scss
+src
+└── styles
+    └── _boilerplate.scss
+    └── _colors.scss
+    └── _typography.scss
+    └── index.scss
 ```
 
-- Add the following to _index.scss_:
+- Добавим следующее в _index.scss_:
 
-```scss
+```scss filename="index.scss"
 @forward 'colors';
 @forward 'typography';
 @forward 'boilerplate';
 ```
 
-- Add the following to \__colors.scss_:
+- Добавим цвета из дизайна в \__colors.scss_:
 
-```scss
+![figma-palette.png](./images/figma-palette.png)
+
+```scss filename="colors.scss"
 :root {
-  // text
-  --color-text-primary: #000;
-  --color-text-secondary: #fff;
+  // accent
+  --color-accent-100: #bea6ff;
+  --color-accent-300: #a280ff;
+  --color-accent-500: #8c61ff;
+  --color-accent-700: #704ecc;
+  --color-accent-900: #382766;
 
-  // backgrounds
-  --color-bg-primary: #3d3d3d;
-  --color-bg-secondary: #fcfcfc;
-  --color-bg-tertiary: #efefef;
+  // success
+  --color-success-100: #80ffbf;
+  --color-success-300: #22e584;
+  --color-success-500: #14cc70;
+  --color-success-700: #0f9954;
+  --color-success-900: #0a6638;
 
-  // palette
-  --color-primary: #366eff;
-  --color-secondary: #ffc700;
-  --color-danger: #ff3636;
+  // danger
+  --color-danger-100: #ff8099;
+  --color-danger-300: #f23d61;
+  --color-danger-500: #cc1439;
+  --color-danger-700: #990f2b;
+  --color-danger-900: #660a1d;
+
+  // warning
+  --color-warning-100: #ffd073;
+  --color-warning-300: #e5ac39;
+  --color-warning-500: #d99000;
+  --color-warning-700: #960;
+  --color-warning-900: #640;
+
+  // info
+  --color-info-100: #73a5ff;
+  --color-info-300: #4c8dff;
+  --color-info-500: #397df6;
+  --color-info-700: #2f68cc;
+  --color-info-900: #234e99;
+
+  // light
+  --color-light-100: #fff;
+  --color-light-300: #f9f7ff;
+  --color-light-500: #f4f2fa;
+  --color-light-700: #dcdae0;
+  --color-light-900: #c3c1c7;
+
+  // dark
+  --color-dark-100: #808080;
+  --color-dark-300: #4c4c4c;
+  --color-dark-500: #4c4c4c;
+  --color-dark-700: #171717;
+  --color-dark-900: #000;
 }
 ```
 
-> Add any extra colors you need yourself
+- Добавим переменные для типографии в \__typography.scss_:
 
-- Add the following to \__typography.scss_:
-
-```scss
+```scss filename="_typography.scss"
 :root {
-  --font-family-primary: 'Montserrat Variable', sans-serif;
+  --font-family-primary: 'Roboto', sans-serif;
 
   // line heights
-  --line-height-xs: 0.991rem;
-  --line-height-s: 1.219rem;
-  --line-height-m: 1.5rem;
-  --line-height-l: 1.75rem;
+  --line-height-s: 16px;
+  --line-height-m: 24px;
+  --line-height-l: 36px;
+
+  // font sizes
+  --font-size-xs: 0.75rem;
+  --font-size-s: 0.875rem;
+  --font-size-m: 1rem;
+  --font-size-l: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-xxl: 1.625rem;
+
+  // font weights
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
 }
 ```
 
-> Add font sizes and font weights yourself
+- Добавим обнуление стандартных стилей и некоторые стандартные значения в \__boilerplate.scss_:
 
-- Add the following to \__boilerplate.scss_:
-
-```scss
+```scss filename="_boilerplate.scss"
 html {
+  box-sizing: border-box;
   font-size: 100%;
 
   -webkit-font-smoothing: antialiased;
@@ -129,76 +183,57 @@ option {
   color: inherit;
 }
 
+a:visited {
+  color: inherit;
+}
+
 body {
   margin: 0;
   padding: 0;
 
-  font-family: var(--font-family-primary);
+  font-family: var(--font-family-primary), sans-serif;
   line-height: var(--line-height-m);
-  color: var(--color-text-primary);
+  color: var(--color-light-100);
 
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-dark-900);
 }
 ```
 
-- Import _index.scss_ in _main.tsx_:
+- Импортируем _index.scss_ в _main.tsx_ и _preview.ts_:
 
-```tsx
-// main.tsx
-
+```tsx filename="main.tsx"
 import './styles/index.scss'
 ```
 
-- Import fonts and styles in storybook:
-
-```tsx
-// .storybook/preview.tsx
-import '@fontsource-variable/montserrat'
+```tsx filename="preview.ts"
 import '../src/styles/index.scss'
 ```
 
-## Components
+<Callout type={'warning'}>
+  Не забудьте удалить <i>index.css</i> если не сделали этого ранее
+</Callout>
 
-- Create an _src/components/ui_ directory in your project
+## Запустим Storybook и проект и проверим
 
-### Button
+- Запустите Storybook:
 
-- Create a _button_ directory in _src/components/ui_ with the following files:
-
-```markdown
-src  
- └── components  
- └── ui  
- └── button  
- └── button.tsx  
- └── button.module.scss  
- └── button.stories.ts
-└── index.ts
+```bash filename="Terminal"
+pnpm storybook
 ```
 
-> **Try to create the component yourself first**
+- Убедитесь, что все работает и стили применяются
 
-Essentially, we are going to have 5 variants of our button:
+- Запустите проект:
 
-- Primary (blue)
-- Secondary (white)
-- Danger (orange)
-- Full width
-- A link that looks like a button
-
-What it means is that we are going to need these props:
-
-```tsx
-import { ComponentPropsWithoutRef } from 'react'
-
-type ButtonProps = {
-  variant?: 'primary' | 'secondary' | 'danger'
-  fullWidth?: boolean
-} & ComponentPropsWithoutRef<'button'>
+```bash filename="Terminal"
+pnpm dev
 ```
 
-The problem here is that we are getting button props, but we will also need it to be a link, and, potentially, a react-router-dom Link, so we want to make our component polymorphic:
+- Убедитесь, что все работает и стили применяются
 
-```tsx
+## Коммитим изменения
 
+```bash filename="Terminal"
+git add .
+git commit -m "feat: add styles"
 ```
