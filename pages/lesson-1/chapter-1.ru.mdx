@@ -51,6 +51,53 @@ pnpm i @it-incubator/eslint-config @it-incubator/prettier-config @it-incubator/s
 pnpm i sass -D
 ```
 
+## Конфигурация Alias'ов
+
+### Конфигурация Vite
+
+В файле vite.config.ts добавьте следующий код:
+
+```ts filename="vite.config.ts"
+import * as path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+  },
+})
+```
+
+Установим типы для nodejs что бы не было ошибок в vite.config.ts
+
+```bash filename="Terminal"
+pnpm i @types/node -D
+```
+
+### Конфигурация TypeScript
+
+```json filename="tsconfig.json"
+{
+  "compilerOptions": {
+    // ...rest of the template
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+```
+
+### Использование
+
+Теперь вы можете использовать алиасы везде в проекте:
+
+```tsx filename="App.tsx"
+import { App } from '@/App'
+```
+
 ## Конфигурация линтеров
 
 ### Prettier
