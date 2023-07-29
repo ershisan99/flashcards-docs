@@ -19,7 +19,7 @@ import { Button } from '../../ui/button'
 import { TextField } from '../../ui/text-field'
 
 type FormValues = {
-  login: string
+  email: string
   password: string
 }
 
@@ -32,7 +32,7 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField {...register('login')} label={'login'} />
+      <TextField {...register('email')} label={'email'} />
       <TextField {...register('password')} label={'password'} />
       <Button type="submit">Submit</Button>
     </form>
@@ -64,14 +64,14 @@ export const Primary: Story = {}
 
 ```tsx filename="login-form.tsx" showLineNumbers {4,11}
 type FormValues = {
-  login: string
+  email: string
   password: string
   rememberMe: boolean
 }
 ...
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField {...register('login')} label={'login'} />
+      <TextField {...register('email')} label={'email'} />
       <TextField {...register('password')} label={'password'} />
       <Checkbox {...register('rememberMe')} label={'remember me'} />
       <Button type="submit">Submit</Button>
@@ -94,7 +94,7 @@ import { TextField } from '../../ui/text-field'
 import { Button } from '../../ui/button'
 
 type FormValues = {
-  login: string
+  email: string
   password: string
   rememberMe: boolean
 }
@@ -116,7 +116,7 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField {...register('login')} label={'login'} />
+      <TextField {...register('email')} label={'email'} />
       <TextField {...register('password')} label={'password'} />
       <Checkbox onCheckedChange={onChange} checked={value} label={'remember me'} />
       <Button type="submit">Submit</Button>
