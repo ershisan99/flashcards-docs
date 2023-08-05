@@ -1,254 +1,85 @@
-# Таблицы
+# Роутинг и защита страниц авторизацией
 
-## Сортировка
+## Роутинг
 
-Наш бэкэнд будет принимать параметр sort формата `name-asc` где `name` -
-название поля, а `asc` - направление сортировки. Возможные направления сортировки:
-`asc` и `desc`.
+Установим `react-router-dom`:
 
-Добавим возможность сортировки для таблиц, для этого:
+```bash filename="Terminal"
+pnpm i react-router-dom
+```
 
-- Создадим историю в сторибуке:
+Создадим файл `src/router.tsx`:
 
-```tsx
-const data = [
+```tsx filename="src/router.tsx"
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+const router = createBrowserRouter([
   {
-    title: 'Project A',
-    cardsCount: 10,
-    updated: '2023-07-07',
-    createdBy: 'John Doe',
+    path: '/',
+    element: <div>hello</div>,
   },
-  {
-    title: 'Project B',
-    cardsCount: 5,
-    updated: '2023-07-06',
-    createdBy: 'Jane Smith',
-  },
-  {
-    title: 'Project C',
-    cardsCount: 8,
-    updated: '2023-07-05',
-    createdBy: 'Alice Johnson',
-  },
-  {
-    title: 'Project D',
-    cardsCount: 3,
-    updated: '2023-07-07',
-    createdBy: 'Bob Anderson',
-  },
-  {
-    title: 'Project E',
-    cardsCount: 12,
-    updated: '2023-07-04',
-    createdBy: 'Emma Davis',
-  },
-]
-export const WithSort = {
-  render: () => {
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Cards</th>
-            <th>Last Updated</th>
-            <th>Created by</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map(item => (
-            <tr key={item.title}>
-              <td>{item.title}</td>
-              <td>{item.cardsCount}</td>
-              <td>{item.updated}</td>
-              <td>{item.createdBy}</td>
-              <td>icons...</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
-  },
+])
+
+export const Router = () => {
+  return <RouterProvider router={router} />
 }
 ```
 
-Получим просто таблицу, которая пока не сортируемая.
+Отрендерим его в `App`:
 
-- Создадим стейт для сортировки:
+```tsx filename="src/App.tsx"
+import { Router } from '@/router'
 
-```tsx
-type Sort = {
-  key: string
-  direction: 'asc' | 'desc'
-} | null
-
-const [sort, setSort] = useState<Sort>(null)
-```
-
-- Добавим обработчик клика на заголовок таблицы:
-
-```tsx
-const handleSort = (key: string) => {
-  if (sort && sort.key === key) {
-    setSort({
-      key,
-      direction: sort.direction === 'asc' ? 'desc' : 'asc',
-    })
-  } else {
-    setSort({
-      key,
-      direction: 'asc',
-    })
-  }
+export function App() {
+  return <Router />
 }
 ```
 
-и используем его в таблице:
+## Защита страниц авторизацией
 
-```tsx
-<tr>
-  <th onClick={() => handleSort('name')}>Name</th>
-  <th onClick={() => handleSort('cardsCount')}>Cards</th>
-  <th onClick={() => handleSort('updated')}>Last Updated</th>
-  <th onClick={() => handleSort('createdBy')}>Created by</th>
-  <th></th>
-</tr>
-```
+Разделим наши роуты на две переменные - `publicRoutes` и `privateRoutes`:
 
-- Добавим иконки в ячейки заголовка:
+```tsx filename="src/router.tsx"
+import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom'
 
-```tsx
-<th onClick={() => handleSort('name')}>
-  Name
-  {sort && sort.key === 'name' && <span>{sort.direction === 'asc' ? '▲' : '▼'}</span>}
-</th>
-```
-
-- Добавим `console.log()` для проверки стейта:
-
-```tsx
-console.log(sort)
-```
-
-Проверяем, при клике должна меняться иконка и в консоли должен появляться правильный объект.
-
-![sort](./images/table-with-basic-sort.png)
-
-## Рефакторинг
-
-Мы повторяем слишком много кода в обработчиках, из-за чего мы оставляем слишком много шансов для ошибок.
-
-Одним из возможных решений в данной ситуации будет создание массива с заголовками таблицы и использование его для отрисовки заголовков и обработчиков:
-
-```tsx
-const columns = [
+const publicRoutes: RouteObject[] = [
   {
-    key: 'name',
-    title: 'Name',
-  },
-  {
-    key: 'cardsCount',
-    title: 'Cards',
-  },
-  {
-    key: 'updated',
-    title: 'Last Updated',
-  },
-  {
-    key: 'createdBy',
-    title: 'Created by',
+    path: '/login',
+    element: <div>login</div>,
   },
 ]
 
-// ...
+const privateRoutes: RouteObject[] = [
+  {
+    path: '/',
+    element: <div>hello</div>,
+  },
+]
 
-{
-  columns.map(column => (
-    <th key={column.key} onClick={() => handleSort(column.key)}>
-      {column.title}
-      {sort && sort.key === column.key && <span>{sort.direction === 'asc' ? '▲' : '▼'}</span>}
-    </th>
-  ))
-}
-
-// ...
+const router = createBrowserRouter([...privateRoutes, ...publicRoutes])
 ```
 
-Протипизируем columns:
+Создадим компонент `PrivateRoutes`:
 
-```tsx
-type Column = {
-  key: string
-  title: string
-}
-const columns: Array<Column> = ...
-```
+```tsx filename="src/router.tsx"
+function PrivateRoutes() {
+  const isAuthenticated = false
 
-У нас будет несколько таблиц, поэтому имеет смысл вынести часть логики в отдельный компонент:
-
-```tsx
-export const Header: FC<
-  Omit<
-    ComponentPropsWithoutRef<thead> & {
-      columns: Column[]
-      sort?: Sort
-      onSort?: (sort: Sort) => void
-    },
-    'children'
-  >
-> = ({ columns, sort, onSort, ...restProps }) => {
-  const handleSort = (key: string, sortable?: boolean) => () => {
-    if (!onSort || !sortable) return
-
-    if (sort?.key !== key) return onSort({ key, direction: 'asc' })
-
-    if (sort.direction === 'desc') return onSort(null)
-
-    return onSort({
-      key,
-      direction: sort?.direction === 'asc' ? 'desc' : 'asc',
-    })
-  }
-
-  return (
-    <thead {...restProps}>
-      <tr>
-        {columns.map(({ title, key, sortable }) => (
-          <th key={key} onClick={handleSort(key, sortable)}>
-            {title}
-            {sort && sort.key === key && <span>{sort.direction === 'asc' ? '▲' : '▼'}</span>}
-          </th>
-        ))}
-      </tr>
-    </thead>
-  )
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />
 }
 ```
 
-Обратите внимание, что состоянием мы будем управлять снаружи, а не внутри компонента.
+И обернем им наши privateRoutes:
 
-Используем новый компонент:
-
-```tsx
-<table>
-  <Header columns={columns} sort={sort} onSort={setSort} />
-  {/*...*/}
-</table>
+```tsx filename="src/router.tsx"
+const router = createBrowserRouter([
+  {
+    element: <PrivateRoutes />,
+    children: privateRoutes,
+  },
+  ...publicRoutes,
+])
 ```
 
-И, наконец, создадим нужную нам строку для бэкэнда:
-
-```tsx
-const sortedString = useMemo(() => {
-  if (!sort) return null
-
-  return `${sort.key}-${sort.direction}`
-}, [sort])
-
-console.log(sortedString)
-```
-
-## Самостоятельная работа:
-
-- Добавить сортировку по умолчанию (при третьем клике по заголовку таблицы сортировка должна сбрасываться (null))
+Теперь когда `isAuthenticated` будет `false`,
+при переходе на `/` мы будем перенаправлены на `/login`.
