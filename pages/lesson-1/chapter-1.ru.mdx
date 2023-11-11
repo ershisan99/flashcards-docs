@@ -1,5 +1,6 @@
 import { Callout } from 'nextra/components'
 import { DownloadLink } from '../../components'
+import { FileTree } from 'nextra-theme-docs'
 
 # 1. Создание и настройка проекта
 
@@ -76,10 +77,28 @@ pnpm i @types/node -D
 
 ### Конфигурация TypeScript
 
-```json filename="tsconfig.json"
+```json filename="tsconfig.json" showLineNumbers {11,22-25}
 {
   "compilerOptions": {
-    // ...rest of the template
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "types": ["node"],
     "paths": {
       "@/*": ["./src/*"]
@@ -118,7 +137,15 @@ module.exports = {
 ```js filename=".eslintrc.cjs"
 module.exports = {
   extends: '@it-incubator/eslint-config',
-  rules: { 'no-console': ['warn', { allow: ['warn', 'error'] }] },
+  overrides: [
+    {
+      files: ['**/*.stories.tsx'],
+      rules: {
+        'react-hooks/rules-of-hooks': 'off',
+        'no-console': 'off',
+      },
+    },
+  ],
 }
 ```
 
@@ -141,7 +168,7 @@ module.exports = {
 ### Включить Prettier
 
 ```bash
-{**/*,*}.{js,ts,jsx,tsx,vue,astro,cjs,mjs,css,scss}
+{**/*,*}.{js,ts,jsx,tsx,vue,astro,cjs,mjs,css,scss,html,json}
 ```
 
 ![prettier-settings.png](./images/prettier-settings.png)
@@ -162,7 +189,7 @@ module.exports = {
 {
   "scripts": {
     "format": "prettier --write src",
-    "lint": "eslint --fix src/**/*.{tsx,ts,jsx,js} --no-error-on-unmatched-pattern && stylelint --fix src/{,*/}*.{scss,css} --allow-empty-input"
+    "lint": "eslint . --ext .jsx,.js,.tsx,.ts  --no-error-on-unmatched-pattern --fix && stylelint --fix src/{,*/}*.{scss,css} --allow-empty-input"
   }
 }
 ```
@@ -170,6 +197,7 @@ module.exports = {
 ### Убрать boilerplate
 
 - Удалить файл App.css
+- Удалить файл index.css
 - Удалить папку assets
 - Заменить содержимое файла App.tsx на следующее:
 
@@ -199,12 +227,11 @@ pnpm run lint
 Постарайтесь разобраться сами, если не получится - замените содержимое файла main.tsx на следующее:
 
 ```tsx filename="main.tsx"
-import './index.css'
 import { StrictMode } from 'react'
 
 import { createRoot } from 'react-dom/client'
 
-import { App } from './App.tsx'
+import { App } from './App'
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
@@ -222,7 +249,26 @@ createRoot(document.getElementById('root') as HTMLElement).render(
 ## Итоговая структура папок
 
 Так должна выглядеть структура папок к концу этой главы:
-![final-folder-structure.png](./images/final-folder-structure.png)
+
+<FileTree>
+  <FileTree.Folder name={'node_modules'} />
+  <FileTree.Folder name={'public'} />
+  <FileTree.Folder name={'src'} defaultOpen>
+    <FileTree.File name={'App.tsx'} />
+    <FileTree.File name={'main.tsx'} />
+    <FileTree.File name={'vite-env.d.ts'} />
+  </FileTree.Folder>
+  <FileTree.File name={'.eslintrc.cjs'} />
+  <FileTree.File name={'.gitignore'} />
+  <FileTree.File name={'.prettierrc.cjs'} />
+  <FileTree.File name={'.stylelintrc.cjs'} />
+  <FileTree.File name={'index.html'} />
+  <FileTree.File name={'package.json'} />
+  <FileTree.File name={'pnpm-lock.yaml'} />
+  <FileTree.File name={'tsconfig.json'} />
+  <FileTree.File name={'tsconfig.node.json'} />
+  <FileTree.File name={'vite.config.ts'} />
+</FileTree>
 
 ## Коммитим изменения
 
