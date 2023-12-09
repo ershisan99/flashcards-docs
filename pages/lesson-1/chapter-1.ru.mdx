@@ -28,7 +28,8 @@ pnpm create vite
 
 ## Инициализация git
 
-В отличие от create-react-app, vite не инициализирует git репозиторий автоматически, поэтому нам нужно сделать это вручную:
+В отличие от create-react-app, vite не инициализирует git репозиторий автоматически, поэтому нам
+нужно сделать это вручную:
 
 ```bash filename="Terminal"
 git init
@@ -56,9 +57,12 @@ pnpm i sass -D
 
 ### Конфигурация Vite
 
-В файле vite.config.ts добавьте следующий код:
+Замените код в `vite.config.ts` на следующий:
 
 ```ts filename="vite.config.ts"
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+
 import * as path from 'path'
 
 export default defineConfig({
@@ -189,7 +193,7 @@ module.exports = {
 {
   "scripts": {
     "format": "prettier --write src",
-    "lint": "eslint . --ext .jsx,.js,.tsx,.ts  --no-error-on-unmatched-pattern --fix && stylelint --fix src/{,*/}*.{scss,css} --allow-empty-input"
+    "lint": "eslint src --ext .jsx,.js,.tsx,.ts  --no-error-on-unmatched-pattern --fix && stylelint --fix src/{,*/}*.{scss,css} --allow-empty-input"
   }
 }
 ```
@@ -221,8 +225,8 @@ pnpm run format
 pnpm run lint
 ```
 
-Некоторые ошибки eslint не исправляются автоматически, поэтому вам придется сделать это самостоятельно, например:
-![eslint-error-main.png](./images/eslint-error-main.png)
+Некоторые ошибки eslint не исправляются автоматически, поэтому вам придется сделать это
+самостоятельно, например: ![eslint-error-main.png](./images/eslint-error-main.png)
 
 Постарайтесь разобраться сами, если не получится - замените содержимое файла main.tsx на следующее:
 
@@ -239,12 +243,6 @@ createRoot(document.getElementById('root') as HTMLElement).render(
   </StrictMode>
 )
 ```
-
-<Callout type={'warning'}>
-  Наш eslint конфиг использует плагин import\/order, который требует, чтобы ваши файлы **css/scss
-  были размещены либо первыми, либо последними в импортах** (см. пример выше), иначе вы получите
-  неразрешимые ошибки.
-</Callout>
 
 ## Итоговая структура папок
 
