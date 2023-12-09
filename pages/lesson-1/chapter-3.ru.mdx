@@ -39,10 +39,12 @@ src
 
 Какие варианты реализации у нас есть?
 
-1. Создать один компонент, который будет принимать все возможные пропсы и в зависимости от них будет рендериться тот или иной вариант кнопки
+1. Создать один компонент, который будет принимать все возможные пропсы и в зависимости от них будет
+   рендериться тот или иной вариант кнопки
 2. Создать отдельный компонент для каждого варианта кнопки
 
-Мы отдадим предпочтение **первому варианту**, так как он более гибкий и позволит нам легко добавлять новые варианты кнопок в будущем.
+Мы отдадим предпочтение **первому варианту**, так как он более гибкий и позволит нам легко добавлять
+новые варианты кнопок в будущем.
 
 ### Props
 
@@ -57,7 +59,8 @@ export type ButtonProps = {
 } & ComponentPropsWithoutRef<'button'>
 ```
 
-`ComponentPropsWithoutRef<'button'>` - это пропсы, которые принимает стандартный html-тег button, мы их расширяем своими пропсами.
+`ComponentPropsWithoutRef<'button'>` - это пропсы, которые принимает стандартный html-тег button, мы
+их расширяем своими пропсами.
 
 ### Реализация
 
@@ -66,9 +69,12 @@ export type ButtonProps = {
 ```tsx filename="button.tsx"
 import s from './button.module.scss'
 
-export const Button = ({ variant = 'primary', fullWidth, className, ...rest }: ButtonProps) => {
+export const Button = ({ className, fullWidth, variant = 'primary', ...rest }: ButtonProps) => {
   return (
-    <button className={`${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`} {...rest} />
+    <button
+      className={`${s.button} ${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`}
+      {...rest}
+    />
   )
 }
 ```
@@ -76,6 +82,15 @@ export const Button = ({ variant = 'primary', fullWidth, className, ...rest }: B
 Для проверки добавим стили в _button.module.scss_:
 
 ```scss filename="button.module.scss"
+.button {
+  all: unset;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-info-500);
+  }
+}
+
 .primary {
   background-color: red;
 }
@@ -175,8 +190,8 @@ export const FullWidth: Story = {
 
 ### Теория и реализация
 
-Дизайнеры могут внезапно решить, что кнопка должна выглядеть как ссылка, а ссылка как кнопка,
-но при этом мы должны рендерить правильные тэги в DOM, для удобства пользователей. Как быть в таком случае?
+Дизайнеры могут внезапно решить, что кнопка должна выглядеть как ссылка, а ссылка как кнопка, но при
+этом мы должны рендерить правильные тэги в DOM, для удобства пользователей. Как быть в таком случае?
 Для этого нам нужно будет передать нужный тег через пропс:
 
 ```tsx filename="button.tsx" showLineNumbers {6,15,19} /Component/4
@@ -198,7 +213,10 @@ export const Button = ({
   ...rest
 }: ButtonProps) => {
   return (
-    <Component className={`${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`} {...rest} />
+    <Component
+      className={`${s.button} ${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`}
+      {...rest}
+    />
   )
 }
 ```
@@ -230,7 +248,8 @@ export const AsLink: Story = {
 
 ### Типизация
 
-В примере выше мы использовали `as: any`, но это не очень хорошо, так как мы теряем типизацию. Давайте попробуем это исправить.
+В примере выше мы использовали `as: any`, но это не очень хорошо, так как мы теряем типизацию.
+Давайте попробуем это исправить.
 
 Добавим generic параметр в наш компонент и в пропсы:
 
@@ -256,19 +275,23 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
 }
 ```
 
-Попробуем отрисовать две кнопки в App.tsx, где одна кнопка будет с тегом `button`, а другая с тегом `a`:
+Попробуем отрисовать две кнопки в App.tsx, где одна кнопка будет с тегом `button`, а другая с тегом
+`a`:
 
 ![button-as-link-error.png](./images/button-as-link-error.png)
 
-Типизация работает правильно, потому что в первом случае мы отрисовываем тэг `a`, у которого есть проп `href`, а во втором случае мы отрисовываем тэг `button`, у которого его нет, поэтому мы и видим ошибку.
+Типизация работает правильно, потому что в первом случае мы отрисовываем тэг `a`, у которого есть
+проп `href`, а во втором случае мы отрисовываем тэг `button`, у которого его нет, поэтому мы и видим
+ошибку.
 
 <Callout type={'default'}>
   Обратите внимание, что типизацию мы тестировали в App.tsx, а не в stories, потому что storybook
   все еще иногда ошибается с TypeScript.
 </Callout>
 
-Все работает как надо, но нужно поправить еще один маленький нюанс:
-Из-за того, что мы заранее не знаем какие пропсы будут у компонента, мы указали className как параметр нашей кнопки (расширяя стандартные пропсы), чтобы не потерять его типизацию:
+Все работает как надо, но нужно поправить еще один маленький нюанс: Из-за того, что мы заранее не
+знаем какие пропсы будут у компонента, мы указали className как параметр нашей кнопки (расширяя
+стандартные пропсы), чтобы не потерять его типизацию:
 
 ```tsx filename="button.tsx" showLineNumbers {9}
 import { ComponentPropsWithoutRef, ElementType } from 'react'
@@ -291,7 +314,8 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
 }
 ```
 
-Это может привести к неожиданным коллизиям и странным ошибкам TypeScript'а, поэтому мы добавим небольшую проверку:
+Это может привести к неожиданным коллизиям и странным ошибкам TypeScript'а, поэтому мы добавим
+небольшую проверку:
 
 ```tsx filename="button.tsx" showLineNumbers {13}
 import { ComponentPropsWithoutRef, ElementType } from 'react'
@@ -316,9 +340,11 @@ export const Button = <T extends ElementType = 'button'>(
 }
 ```
 
-С помощью Omit мы убираем из пропсов переданного компонента все пропсы, которые уже есть в наших кастомных пропсах, тем самым избегая коллизий.
+С помощью Omit мы убираем из пропсов переданного компонента все пропсы, которые уже есть в наших
+кастомных пропсах, тем самым избегая коллизий.
 
-Подробнее про типизацию полиморфных компонентов можно почитать [вот тут](https://itnext.io/react-polymorphic-components-with-typescript-f7ce72ea7af2).
+Подробнее про типизацию полиморфных компонентов можно почитать
+[вот тут](https://itnext.io/react-polymorphic-components-with-typescript-f7ce72ea7af2).
 
 ## Коммитим изменения
 
