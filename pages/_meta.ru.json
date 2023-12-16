@@ -6,6 +6,12 @@
     "href": "https://www.figma.com/file/PwHkQjA62wyw8BSEyW4gIk/%D0%9E%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE-%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B0%D0%BC?node-id=0%3A1&mode=dev",
     "newWindow": true
   },
+  "api": {
+    "title": "Api docs ↗",
+    "type": "page",
+    "href": "https://api.flashcards.andrii.es/docs",
+    "newWindow": true
+  },
   "lesson-1": "Урок 1",
   "lesson-2": "Урок 2: Формы",
   "lesson-3": "Урок 3: Роутинг, Авторизация",
