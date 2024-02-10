@@ -1,4 +1,5 @@
 import { Callout } from 'nextra/components'
+import { FileTree } from 'nextra-theme-docs'
 
 # Компоненты, полиморфные компоненты
 
@@ -10,17 +11,23 @@ import { Callout } from 'nextra/components'
 
 - Создайте папку _button_ в _src/components/ui_ со следующей структурой:
 
-{/* prettier-ignore */}
-```markdown
-src
-└── components
-    └── ui
-        └── button
-            └── button.tsx
-            └── button.module.scss
-            └── button.stories.ts
-            └── index.ts
-```
+<FileTree>
+  <FileTree.Folder name={'src'} defaultOpen>
+    <FileTree.Folder name={'components'} defaultOpen>
+      <FileTree.Folder name={'ui'} defaultOpen>
+        <FileTree.Folder name={'button'} defaultOpen>
+          <FileTree.File name={'button.tsx'} />
+          <FileTree.File name={'button.module.scss'} />
+          <FileTree.File name={'button.stories.ts'} />
+          <FileTree.File name={'index.ts'} />
+        </FileTree.Folder>
+        <FileTree.File name={'index.ts'} />
+      </FileTree.Folder>
+      <FileTree.File name={'index.ts'} />
+    </FileTree.Folder>
+
+  </FileTree.Folder>
+</FileTree>
 
 ### Дизайн и варианты
 
@@ -29,11 +36,10 @@ src
 ![Button](./images/Button.png)
 
 - Стандартная, она же основная, она же `primary`
+- Стандартная, она же основная, она же `primary` с иконкой
 - Второстепенная, она же `secondary`
-- Третьестепенная, она же `tertiary`, иногда ее называют `outlined`
-- Кнопка, занимающая всю ширину родителя, она же `fullWidth`
-- Кнопка, которая выглядит как ссылка, она же `link`
-- Ссылка, которая выглядит как кнопка
+- Второстепенная, она же `secondary` с иконкой
+- Кнопка шириной в 100%, она же fullWidth, может быть как `primary`, так и `secondary`
 
 ### Варианты реализации
 
@@ -54,7 +60,7 @@ src
 import { ComponentPropsWithoutRef } from 'react'
 
 export type ButtonProps = {
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'link'
+  variant?: 'primary' | 'secondary'
   fullWidth?: boolean
 } & ComponentPropsWithoutRef<'button'>
 ```
@@ -85,6 +91,9 @@ export const Button = ({ className, fullWidth, variant = 'primary', ...rest }: B
 .button {
   all: unset;
   cursor: pointer;
+  box-sizing: border-box;
+  color: inherit;
+  font-family: inherit;
 
   &:focus-visible {
     outline: 2px solid var(--color-info-500);
@@ -92,19 +101,11 @@ export const Button = ({ className, fullWidth, variant = 'primary', ...rest }: B
 }
 
 .primary {
-  background-color: red;
+  background-color: var(--color-primary-500);
 }
 
 .secondary {
-  background-color: green;
-}
-
-.tertiary {
-  background-color: blue;
-}
-
-.link {
-  background-color: yellow;
+  background-color: var(--color-dark-300);
 }
 
 .fullWidth {
@@ -133,7 +134,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     variant: {
-      options: ['primary', 'secondary', 'tertiary', 'link'],
+      options: ['primary', 'secondary'],
       control: { type: 'radio' },
     },
   },
@@ -157,25 +158,11 @@ export const Secondary: Story = {
     disabled: false,
   },
 }
-export const Tertiary: Story = {
-  args: {
-    variant: 'tertiary',
-    children: 'Tertiary Button',
-    disabled: false,
-  },
-}
-export const Link: Story = {
-  args: {
-    variant: 'link',
-    children: 'Tertiary Button',
-    disabled: false,
-  },
-}
 
 export const FullWidth: Story = {
   args: {
     variant: 'primary',
-    children: 'Full Width Button',
+    children: 'Full Width Primary Button',
     disabled: false,
     fullWidth: true,
   },
@@ -201,7 +188,7 @@ import s from './button.module.scss'
 
 export type ButtonProps = {
   as: any
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'link'
+  variant?: 'primary' | 'secondary'
   fullWidth?: boolean
 } & ComponentPropsWithoutRef<'button'>
 
@@ -221,8 +208,6 @@ export const Button = ({
 }
 ```
 
-Этот
-
 Добавим в stories пример использования:
 
 ```tsx filename="button.stories.ts"
@@ -241,11 +226,6 @@ export const AsLink: Story = {
 
 Как видите, в DOM мы получили тег `a` с нужными пропсами.
 
-<Callout>
-  В данном примере кнопка с тэгом 'a' не выглядит так, как обычная кнопка. Это связано со
-  стандартными стилями браузера и будет работать как надо когда мы застилизуем нашу кнопку правильно
-</Callout>
-
 ### Типизация
 
 В примере выше мы использовали `as: any`, но это не очень хорошо, так как мы теряем типизацию.
@@ -261,7 +241,7 @@ import s from './button.module.scss'
 export type ButtonProps<T extends ElementType = 'button'> = {
   as?: T
   children: ReactNode
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'link'
+  variant?: 'primary' | 'secondary'
   fullWidth?: boolean
   className?: string
 } & ComponentPropsWithoutRef<T>
@@ -288,63 +268,6 @@ export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) 
   Обратите внимание, что типизацию мы тестировали в App.tsx, а не в stories, потому что storybook
   все еще иногда ошибается с TypeScript.
 </Callout>
-
-Все работает как надо, но нужно поправить еще один маленький нюанс: Из-за того, что мы заранее не
-знаем какие пропсы будут у компонента, мы указали className как параметр нашей кнопки (расширяя
-стандартные пропсы), чтобы не потерять его типизацию:
-
-```tsx filename="button.tsx" showLineNumbers {9}
-import { ComponentPropsWithoutRef, ElementType } from 'react'
-
-import s from './button.module.scss'
-
-export type ButtonProps<T extends ElementType = 'button'> = {
-  as?: T
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'link'
-  fullWidth?: boolean
-  className?: string
-} & ComponentPropsWithoutRef<T>
-
-export const Button = <T extends ElementType = 'button'>(props: ButtonProps<T>) => {
-  const { variant = 'primary', fullWidth, className, as: Component = 'button', ...rest } = props
-
-  return (
-    <Component className={`${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`} {...rest} />
-  )
-}
-```
-
-Это может привести к неожиданным коллизиям и странным ошибкам TypeScript'а, поэтому мы добавим
-небольшую проверку:
-
-```tsx filename="button.tsx" showLineNumbers {13}
-import { ComponentPropsWithoutRef, ElementType } from 'react'
-
-import s from './button.module.scss'
-
-export type ButtonProps<T extends ElementType = 'button'> = {
-  as?: T
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'link'
-  fullWidth?: boolean
-  className?: string
-} & ComponentPropsWithoutRef<T>
-
-export const Button = <T extends ElementType = 'button'>(
-  props: ButtonProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ButtonProps<T>>
-) => {
-  const { variant = 'primary', fullWidth, className, as: Component = 'button', ...rest } = props
-
-  return (
-    <Component className={`${s[variant]} ${fullWidth ? s.fullWidth : ''} ${className}`} {...rest} />
-  )
-}
-```
-
-С помощью Omit мы убираем из пропсов переданного компонента все пропсы, которые уже есть в наших
-кастомных пропсах, тем самым избегая коллизий.
-
-Подробнее про типизацию полиморфных компонентов можно почитать
-[вот тут](https://itnext.io/react-polymorphic-components-with-typescript-f7ce72ea7af2).
 
 ## Коммитим изменения
 
